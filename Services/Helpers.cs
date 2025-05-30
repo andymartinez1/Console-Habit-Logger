@@ -44,6 +44,7 @@ namespace Habit_Logger.Services
                     var command = new SqliteCommand(insertSql, connection);
                     command.Parameters.AddWithValue("@Name", habitNames[i]);
                     command.Parameters.AddWithValue("@MeasurementUnit", habitUnits[i]);
+
                     command.ExecuteNonQuery();
                 }
 

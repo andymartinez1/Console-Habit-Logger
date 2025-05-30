@@ -78,10 +78,10 @@ namespace Habit_Logger.Services
                 }
             }
 
-            ViewHabits(habits);
+            ViewAllHabits(habits);
         }
 
-        internal static void ViewHabits(List<Data.Data.Habit> habits)
+        internal static void ViewAllHabits(List<Data.Data.Habit> habits)
         {
             var table = new Table();
             table.AddColumn("Id");
@@ -244,10 +244,10 @@ namespace Habit_Logger.Services
                 }
             }
 
-            ViewProgress(records);
+            ViewAllProgress(records);
         }
 
-        internal static void ViewProgress(List<Data.Data.ProgressWithHabit> progress)
+        internal static void ViewAllProgress(List<Data.Data.ProgressWithHabit> progress)
         {
             var table = new Table();
             table.AddColumn("Id");

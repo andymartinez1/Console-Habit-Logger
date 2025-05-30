@@ -13,14 +13,14 @@ namespace Habit_Logger.UI
             {
                 var usersChoice = AnsiConsole.Prompt(
                        new SelectionPrompt<string>()
-                        .Title("Please select an option:")
+                        .Title("Welcome! Please select from the following options:")
                         .AddChoices(
                            "Add Habit",
                            "Delete Habit",
                            "Update Habit",
                            "Add Progress",
                            "Delete Progress",
-                           "View Progress",
+                           "View All Progress",
                            "Update Progress",
                            "Quit")
                         );
@@ -42,7 +42,7 @@ namespace Habit_Logger.UI
                     case "Delete Progress":
                         HabitServices.DeleteProgress();
                         break;
-                    case "View Progress":
+                    case "View All Progress":
                         HabitServices.GetProgress();
                         break;
                     case "Update Progress":
