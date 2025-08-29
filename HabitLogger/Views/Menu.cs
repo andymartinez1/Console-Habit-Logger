@@ -7,18 +7,33 @@ namespace HabitLogger.Views;
 
 public class Menu : IMenu
 {
+    private readonly HabitMenuOptions[] _habitMenuOptions =
+    [
+        HabitMenuOptions.AddHabit,
+        HabitMenuOptions.ViewAllHabits,
+        HabitMenuOptions.ViewHabitById,
+        HabitMenuOptions.UpdateHabit,
+        HabitMenuOptions.DeleteHabit,
+        HabitMenuOptions.BackToMainMenu,
+    ];
+
     private readonly IHabitService _habitService;
 
-    private readonly MenuOptions[] _menuOptions =
+    private readonly MainMenuOptions[] _mainMenuOptions =
     [
-        MenuOptions.AddHabit,
-        MenuOptions.DeleteHabit,
-        MenuOptions.UpdateHabit,
-        MenuOptions.AddProgress,
-        MenuOptions.DeleteProgress,
-        MenuOptions.ViewAllProgress,
-        MenuOptions.UpdateProgress,
-        MenuOptions.Quit,
+        MainMenuOptions.ManageHabits,
+        MainMenuOptions.ManageProgress,
+        MainMenuOptions.Quit,
+    ];
+
+    private readonly ProgressMenuOptions[] _progressMenuOptions =
+    [
+        ProgressMenuOptions.AddProgress,
+        ProgressMenuOptions.ViewAllProgress,
+        ProgressMenuOptions.ViewProgressById,
+        ProgressMenuOptions.UpdateProgress,
+        ProgressMenuOptions.DeleteProgress,
+        ProgressMenuOptions.BackToMainMenu,
     ];
 
     private readonly IProgressService _progressService;
@@ -29,6 +44,52 @@ public class Menu : IMenu
         _progressService = progressService;
     }
 
+    public void HabitMenu()
+    {
+        var isMenuRunning = true;
+
+        while (isMenuRunning)
+        {
+            var usersChoice = AnsiConsole.Prompt(
+                new SelectionPrompt<HabitMenuOptions>()
+                    .Title("Welcome! Please select from the following options:")
+                    .AddChoices(_habitMenuOptions)
+                    .UseConverter(c => c.GetDisplayName())
+            );
+
+            switch (usersChoice)
+            {
+                case HabitMenuOptions.AddHabit:
+                    AnsiConsole.Clear();
+                    _habitService.InsertHabit();
+                    break;
+                case HabitMenuOptions.ViewAllHabits:
+                    AnsiConsole.Clear();
+                    _habitService.GetHabits();
+                    break;
+                case HabitMenuOptions.ViewHabitById:
+                    AnsiConsole.Clear();
+                    _habitService.GetHabitById();
+                    break;
+                case HabitMenuOptions.UpdateHabit:
+                    AnsiConsole.Clear();
+                    _habitService.UpdateHabit();
+                    break;
+                case HabitMenuOptions.DeleteHabit:
+                    AnsiConsole.Clear();
+                    _habitService.DeleteHabit();
+                    break;
+                case HabitMenuOptions.BackToMainMenu:
+                    AnsiConsole.Clear();
+                    MainMenu();
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice. Please choose one of the above");
+                    break;
+            }
+        }
+    }
+
     public void MainMenu()
     {
         var isMenuRunning = true;
@@ -36,38 +97,65 @@ public class Menu : IMenu
         while (isMenuRunning)
         {
             var usersChoice = AnsiConsole.Prompt(
-                new SelectionPrompt<MenuOptions>()
+                new SelectionPrompt<MainMenuOptions>()
                     .Title("Welcome! Please select from the following options:")
-                    .AddChoices(_menuOptions)
+                    .AddChoices(_mainMenuOptions)
                     .UseConverter(c => c.GetDisplayName())
             );
 
             switch (usersChoice)
             {
-                case MenuOptions.AddHabit:
-                    _habitService.InsertHabit();
+                case MainMenuOptions.ManageHabits:
+                    AnsiConsole.Clear();
+                    HabitMenu();
                     break;
-                case MenuOptions.DeleteHabit:
-                    _habitService.DeleteHabit();
+                case MainMenuOptions.ManageProgress:
+                    AnsiConsole.Clear();
+                    ProgressMenu();
                     break;
-                case MenuOptions.UpdateHabit:
-                    _habitService.UpdateHabit();
-                    break;
-                case MenuOptions.AddProgress:
-                    _progressService.InsertProgress();
-                    break;
-                case MenuOptions.DeleteProgress:
-                    _progressService.DeleteProgress();
-                    break;
-                case MenuOptions.ViewAllProgress:
-                    _progressService.GetProgress();
-                    break;
-                case MenuOptions.UpdateProgress:
-                    _progressService.UpdateProgress();
-                    break;
-                case MenuOptions.Quit:
-                    Console.WriteLine("Goodbye");
+                case MainMenuOptions.Quit:
+                    AnsiConsole.Clear();
+                    AnsiConsole.MarkupLine("[red]Thank you for using the Habit Logger app[/]");
                     isMenuRunning = false;
+                    Environment.Exit(0);
+                    break;
+            }
+        }
+    }
+
+    public void ProgressMenu()
+    {
+        var isMenuRunning = true;
+
+        while (isMenuRunning)
+        {
+            var usersChoice = AnsiConsole.Prompt(
+                new SelectionPrompt<ProgressMenuOptions>()
+                    .Title("Welcome! Please select from the following options:")
+                    .AddChoices(_progressMenuOptions)
+                    .UseConverter(c => c.GetDisplayName())
+            );
+
+            switch (usersChoice)
+            {
+                case ProgressMenuOptions.AddProgress:
+                    AnsiConsole.Clear();
+                    break;
+                case ProgressMenuOptions.ViewAllProgress:
+                    AnsiConsole.Clear();
+                    break;
+                case ProgressMenuOptions.ViewProgressById:
+                    AnsiConsole.Clear();
+                    break;
+                case ProgressMenuOptions.UpdateProgress:
+                    AnsiConsole.Clear();
+                    break;
+                case ProgressMenuOptions.DeleteProgress:
+                    AnsiConsole.Clear();
+                    break;
+                case ProgressMenuOptions.BackToMainMenu:
+                    AnsiConsole.Clear();
+                    MainMenu();
                     break;
                 default:
                     Console.WriteLine("Invalid choice. Please choose one of the above");

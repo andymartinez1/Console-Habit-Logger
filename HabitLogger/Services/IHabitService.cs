@@ -6,6 +6,8 @@ public interface IHabitService
 
     public void GetHabits();
 
+    public void GetHabitById();
+
     public void UpdateHabit();
 
     public void DeleteHabit();

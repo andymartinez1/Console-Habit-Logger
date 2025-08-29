@@ -2,27 +2,23 @@
 
 namespace HabitLogger.Enums;
 
-public enum MenuOptions
+public enum ProgressMenuOptions
 {
-    [Display(Name = "Add Habit")]
-    AddHabit,
-
-    [Display(Name = "Delete Habit")]
-    DeleteHabit,
-
-    [Display(Name = "Update Habit")]
-    UpdateHabit,
-
     [Display(Name = "Add Progress")]
     AddProgress,
-
-    [Display(Name = "Delete Progress")]
-    DeleteProgress,
 
     [Display(Name = "View All Progress")]
     ViewAllProgress,
 
+    [Display(Name = "View Progress by ID")]
+    ViewProgressById,
+
     [Display(Name = "Update Progress")]
     UpdateProgress,
-    Quit,
+
+    [Display(Name = "Delete Progress")]
+    DeleteProgress,
+
+    [Display(Name = "Back to Main Menu")]
+    BackToMainMenu,
 }

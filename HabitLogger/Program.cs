@@ -10,8 +10,8 @@ var services = new ServiceCollection();
 // Registering the dependencies
 services.AddScoped<HabitLoggerDbContext>();
 services.AddScoped<IHabitRepository, HabitRepository>();
-services.AddScoped<IProgressRepository, ProgressRepository>();
 services.AddScoped<IHabitService, HabitService>();
+services.AddScoped<IProgressRepository, ProgressRepository>();
 services.AddScoped<IProgressService, ProgressService>();
 services.AddScoped<IMenu, Menu>();
 
