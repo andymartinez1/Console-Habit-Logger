@@ -3,9 +3,9 @@ using Spectre.Console;
 
 namespace HabitLogger.Views
 {
-    internal class Menu
+    public class Menu : IMenu
     {
-        internal static void MainMenu()
+        public static void MainMenu()
         {
             var isMenuRunning = true;
 

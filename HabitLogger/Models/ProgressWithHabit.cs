@@ -8,7 +8,7 @@ public class ProgressWithHabit
 
     public int Quantity { get; set; }
 
-    public string HabitName { get; set; }
+    public string HabitName { get; set; } = string.Empty;
 
-    public string MeasurementUnit { get; set; }
+    public string MeasurementUnit { get; set; } = string.Empty;
 }
