@@ -1,28 +1,33 @@
-﻿using Habit_Logger.Data;
-using Habit_Logger.UI;
+﻿using System.Globalization;
+using HabitLogger.Data;
+using HabitLogger.Models;
+using HabitLogger.Views;
 using Microsoft.Data.Sqlite;
 using Spectre.Console;
-using System.Globalization;
-using static Habit_Logger.Data.Data;
 
-namespace Habit_Logger.Services
+namespace HabitLogger.Services
 {
-    internal class HabitServices
+    public class HabitService : IHabitService
     {
-
-        internal static void InsertHabit()
+        public static void InsertHabit()
         {
             string name = AnsiConsole.Ask<string>("Enter the name of the habit:");
             while (string.IsNullOrWhiteSpace(name))
             {
-                name = AnsiConsole.Ask<string>("Habit name cannot be empty. Enter the name of the habit:");
+                name = AnsiConsole.Ask<string>(
+                    "Habit name cannot be empty. Enter the name of the habit:"
+                );
             }
 
-            string measurementUnit = AnsiConsole.Ask<string>("Enter the measurement unit for the habit (e.g., 'pushups', 'minutes', etc.):");
+            string measurementUnit = AnsiConsole.Ask<string>(
+                "Enter the measurement unit for the habit (e.g., 'pushups', 'minutes', etc.):"
+            );
 
             while (string.IsNullOrWhiteSpace(measurementUnit))
             {
-                measurementUnit = AnsiConsole.Ask<string>("Measurement unit cannot be empty. Enter the measurement unit for the habit:");
+                measurementUnit = AnsiConsole.Ask<string>(
+                    "Measurement unit cannot be empty. Enter the measurement unit for the habit:"
+                );
             }
 
             using (var connection = new SqliteConnection(Database.ConnectionString))
@@ -41,7 +46,7 @@ namespace Habit_Logger.Services
             }
         }
 
-        internal static void GetHabits()
+        public static void GetHabits()
         {
             List<Habit> habits = new();
 
@@ -59,10 +64,10 @@ namespace Habit_Logger.Services
                             try
                             {
                                 habits.Add(
-                                new Habit(
-                                    reader.GetInt32(0),
-                                    reader.GetString(1),
-                                    reader.GetString(2)
+                                    new Habit(
+                                        reader.GetInt32(0),
+                                        reader.GetString(1),
+                                        reader.GetString(2)
                                     )
                                 );
                             }
@@ -81,7 +86,7 @@ namespace Habit_Logger.Services
             ViewAllHabits(habits);
         }
 
-        internal static void ViewAllHabits(List<Data.Data.Habit> habits)
+        public static void ViewAllHabits(List<Data.Data.Habit> habits)
         {
             var table = new Table();
             table.AddColumn("Id");
@@ -91,10 +96,11 @@ namespace Habit_Logger.Services
             {
                 table.AddRow(habit.Id.ToString(), habit.Name, habit.UnitOfMeasurement);
             }
+
             AnsiConsole.Write(table);
         }
 
-        internal static void DeleteHabit()
+        public static void DeleteHabit()
         {
             GetHabits();
 
@@ -106,8 +112,7 @@ namespace Habit_Logger.Services
                 {
                     connection.Open();
 
-                    command.CommandText =
-                            @$"DELETE FROM habits WHERE Id = {id}";
+                    command.CommandText = @$"DELETE FROM habits WHERE Id = {id}";
 
                     command.ExecuteNonQuery();
                 }
@@ -116,7 +121,7 @@ namespace Habit_Logger.Services
             }
         }
 
-        internal static void UpdateHabit()
+        public static void UpdateHabit()
         {
             GetHabits();
 
@@ -147,7 +152,8 @@ namespace Habit_Logger.Services
             string query;
             if (updateName && updateUnit)
             {
-                query = $"UPDATE habits SET Name = '{name}', MeasurementUnit = '{unit}' WHERE Id = {id}";
+                query =
+                    $"UPDATE habits SET Name = '{name}', MeasurementUnit = '{unit}' WHERE Id = {id}";
             }
             else if (updateName && !updateUnit)
             {
@@ -172,13 +178,17 @@ namespace Habit_Logger.Services
             }
         }
 
-        internal static void InsertProgress()
+        public static void InsertProgress()
         {
-            string date = GetDateInput("Enter the date. (Format: mm-dd-yyyy). Type 0 to return to the main menu.");
+            string date = GetDateInput(
+                "Enter the date. (Format: mm-dd-yyyy). Type 0 to return to the main menu."
+            );
 
             GetHabits();
 
-            var habitId = GetNumberInput("Enter the ID of the habit for which you want to add a record. Type 0 to return to the main menu.");
+            var habitId = GetNumberInput(
+                "Enter the ID of the habit for which you want to add a record. Type 0 to return to the main menu."
+            );
             int quantity = GetNumberInput("Enter quantity. Type 0 to return to the main menu.");
 
             Console.Clear();
@@ -193,14 +203,13 @@ namespace Habit_Logger.Services
                         $"INSERT INTO progress(date, quantity, habitId) VALUES ('{date}', {quantity}, {habitId})";
 
                     tableCommand.ExecuteNonQuery();
-
                 }
 
                 connection.Close();
             }
         }
 
-        internal static void GetProgress()
+        public static void GetProgress()
         {
             List<ProgressWithHabit> records = new();
 
@@ -210,7 +219,8 @@ namespace Habit_Logger.Services
 
                 using (var tableCommand = connection.CreateCommand())
                 {
-                    tableCommand.CommandText = @"
+                    tableCommand.CommandText =
+                        @"
                     SELECT progress.Id, progress.Date, progress.Quantity, progress.HabitId, habits.Name AS HabitName, habits.MeasurementUnit
                     FROM progress
                     INNER JOIN habits ON progress.HabitId = habits.Id";
@@ -223,12 +233,19 @@ namespace Habit_Logger.Services
                             {
                                 try
                                 {
-                                    records.Add(new ProgressWithHabit(
-                                    reader.GetInt32(0),
-                                    DateTime.ParseExact(reader.GetString(1), "MM-dd-yyyy", CultureInfo.InvariantCulture),
-                                    reader.GetInt32(2),
-                                    reader.GetString(4),
-                                    reader.GetString(5)));
+                                    records.Add(
+                                        new ProgressWithHabit(
+                                            reader.GetInt32(0),
+                                            DateTime.ParseExact(
+                                                reader.GetString(1),
+                                                "MM-dd-yyyy",
+                                                CultureInfo.InvariantCulture
+                                            ),
+                                            reader.GetInt32(2),
+                                            reader.GetString(4),
+                                            reader.GetString(5)
+                                        )
+                                    );
                                 }
                                 catch (FormatException ex)
                                 {
@@ -247,7 +264,7 @@ namespace Habit_Logger.Services
             ViewAllProgress(records);
         }
 
-        internal static void ViewAllProgress(List<Data.Data.ProgressWithHabit> progress)
+        public static void ViewAllProgress(List<Data.Data.ProgressWithHabit> progress)
         {
             var table = new Table();
             table.AddColumn("Id");
@@ -257,17 +274,24 @@ namespace Habit_Logger.Services
 
             foreach (var record in progress)
             {
-                table.AddRow(record.Id.ToString(), record.Date.ToString("D"), $"{record.Quantity} {record.MeasurementUnit}", record.HabitName.ToString());
+                table.AddRow(
+                    record.Id.ToString(),
+                    record.Date.ToString("D"),
+                    $"{record.Quantity} {record.MeasurementUnit}",
+                    record.HabitName.ToString()
+                );
             }
 
             AnsiConsole.Write(table);
         }
 
-        internal static void DeleteProgress()
+        public static void DeleteProgress()
         {
             GetProgress();
 
-            var id = GetNumberInput("Enter the ID of the record you want to delete. Type 0 to return to the main menu.");
+            var id = GetNumberInput(
+                "Enter the ID of the record you want to delete. Type 0 to return to the main menu."
+            );
 
             using (var connection = new SqliteConnection(Database.ConnectionString))
             {
@@ -275,8 +299,7 @@ namespace Habit_Logger.Services
 
                 using (var tableCommand = connection.CreateCommand())
                 {
-                    tableCommand.CommandText =
-                        $"DELETE FROM progress WHERE Id = {id}";
+                    tableCommand.CommandText = $"DELETE FROM progress WHERE Id = {id}";
 
                     int rowsAffected = tableCommand.ExecuteNonQuery();
                     if (rowsAffected != 0)
@@ -289,30 +312,37 @@ namespace Habit_Logger.Services
             }
         }
 
-        internal static void UpdateProgress()
+        public static void UpdateProgress()
         {
             GetProgress();
 
-            var id = GetNumberInput("Enter the ID of the record you want to update. Type 0 to return to the main menu.");
+            var id = GetNumberInput(
+                "Enter the ID of the record you want to update. Type 0 to return to the main menu."
+            );
 
             string date = "";
             bool updateDate = AnsiConsole.Confirm("Do you want to update the date?");
             if (updateDate)
             {
-                date = GetDateInput("Enter the new date. (Format: mm-dd-yyyy). Type 0 to return to the main menu.");
+                date = GetDateInput(
+                    "Enter the new date. (Format: mm-dd-yyyy). Type 0 to return to the main menu."
+                );
             }
 
             int quantity = 0;
             bool updateQuantity = AnsiConsole.Confirm("Do you want to update the quantity?");
             if (updateQuantity)
             {
-                quantity = GetNumberInput("Enter the new quantity. Type 0 to return to the main menu.");
+                quantity = GetNumberInput(
+                    "Enter the new quantity. Type 0 to return to the main menu."
+                );
             }
 
             string query;
             if (updateDate && updateQuantity)
             {
-                query = $"UPDATE progress SET Date = '{date}', Quantity = {quantity} WHERE Id = {id}";
+                query =
+                    $"UPDATE progress SET Date = '{date}', Quantity = {quantity} WHERE Id = {id}";
             }
             else if (updateDate && !updateQuantity)
             {
@@ -338,28 +368,40 @@ namespace Habit_Logger.Services
             }
         }
 
-        internal static string GetDateInput(string message)
+        public static string GetDateInput(string message)
         {
             Console.WriteLine(message);
             string dateInput = Console.ReadLine();
 
-            if (dateInput == "0") Menu.MainMenu();
+            if (dateInput == "0")
+                Menu.MainMenu();
 
-            while (!DateTime.TryParseExact(dateInput, "MM-dd-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+            while (
+                !DateTime.TryParseExact(
+                    dateInput,
+                    "MM-dd-yyyy",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out _
+                )
+            )
             {
-                Console.WriteLine("Invalid date format. Please enter the date in mm-dd-yyyy format.");
+                Console.WriteLine(
+                    "Invalid date format. Please enter the date in mm-dd-yyyy format."
+                );
                 dateInput = Console.ReadLine();
             }
 
             return dateInput;
         }
 
-        internal static int GetNumberInput(string message)
+        public static int GetNumberInput(string message)
         {
             Console.WriteLine(message);
             string numberInput = Console.ReadLine();
 
-            if (numberInput == "0") Menu.MainMenu();
+            if (numberInput == "0")
+                Menu.MainMenu();
 
             int output = 0;
             while (!int.TryParse(numberInput, out output) || output < 0)

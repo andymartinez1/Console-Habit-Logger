@@ -1,13 +1,13 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using HabitLogger.Data;
+using Microsoft.Data.Sqlite;
 
-namespace Habit_Logger.Services
+namespace HabitLogger.Utils
 {
     internal class Helpers
     {
-
         internal static bool IsTableEmpty(string tableName)
         {
-            using (var connection = new SqliteConnection(Data.Database.ConnectionString))
+            using (var connection = new SqliteConnection(Database.ConnectionString))
             {
                 connection.Open();
 
@@ -29,18 +29,26 @@ namespace Habit_Logger.Services
             if (!recordsTableEmpty || !habitsTableEmpty)
                 return;
 
-            string[] habitNames = { "Walking", "Biking", "Daily Pushups", "Reading", "Water Consumption" };
+            string[] habitNames =
+            {
+                "Walking",
+                "Biking",
+                "Daily Pushups",
+                "Reading",
+                "Water Consumption",
+            };
             string[] habitUnits = { "Miles", "Miles", "Repetitions", "Pages", "Ounces" };
             string[] dates = GenerateRandomDates(100);
             int[] quantities = GenerateRandomQuantities(100, 0, 200);
 
-            using (var connection = new SqliteConnection(Data.Database.ConnectionString))
+            using (var connection = new SqliteConnection(Database.ConnectionString))
             {
                 connection.Open();
 
                 for (int i = 0; i < habitNames.Length; i++)
                 {
-                    var insertSql = "INSERT INTO habits (Name, MeasurementUnit) VALUES (@Name, @MeasurementUnit);";
+                    var insertSql =
+                        "INSERT INTO habits (Name, MeasurementUnit) VALUES (@Name, @MeasurementUnit);";
                     var command = new SqliteCommand(insertSql, connection);
                     command.Parameters.AddWithValue("@Name", habitNames[i]);
                     command.Parameters.AddWithValue("@MeasurementUnit", habitUnits[i]);
@@ -50,7 +58,8 @@ namespace Habit_Logger.Services
 
                 for (int i = 0; i < 100; i++)
                 {
-                    var insertSql = "INSERT INTO progress (Date, Quantity, HabitId) VALUES (@Date, @Quantity, @HabitId);";
+                    var insertSql =
+                        "INSERT INTO progress (Date, Quantity, HabitId) VALUES (@Date, @Quantity, @HabitId);";
                     var command = new SqliteCommand(insertSql, connection);
                     command.Parameters.AddWithValue("@Date", dates[i]);
                     command.Parameters.AddWithValue("@Quantity", quantities[i]);

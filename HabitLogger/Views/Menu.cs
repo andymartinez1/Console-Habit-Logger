@@ -1,7 +1,7 @@
-﻿using Spectre.Console;
-using Habit_Logger.Services;
+﻿using HabitLogger.Services;
+using Spectre.Console;
 
-namespace Habit_Logger.UI
+namespace HabitLogger.Views
 {
     internal class Menu
     {
@@ -12,41 +12,42 @@ namespace Habit_Logger.UI
             while (isMenuRunning)
             {
                 var usersChoice = AnsiConsole.Prompt(
-                       new SelectionPrompt<string>()
+                    new SelectionPrompt<string>()
                         .Title("Welcome! Please select from the following options:")
                         .AddChoices(
-                           "Add Habit",
-                           "Delete Habit",
-                           "Update Habit",
-                           "Add Progress",
-                           "Delete Progress",
-                           "View All Progress",
-                           "Update Progress",
-                           "Quit")
-                        );
+                            "Add Habit",
+                            "Delete Habit",
+                            "Update Habit",
+                            "Add Progress",
+                            "Delete Progress",
+                            "View All Progress",
+                            "Update Progress",
+                            "Quit"
+                        )
+                );
 
                 switch (usersChoice)
                 {
                     case "Add Habit":
-                        HabitServices.InsertHabit();
+                        HabitService.InsertHabit();
                         break;
                     case "Delete Habit":
-                        HabitServices.DeleteHabit();
+                        HabitService.DeleteHabit();
                         break;
                     case "Update Habit":
-                        HabitServices.UpdateHabit();
+                        HabitService.UpdateHabit();
                         break;
                     case "Add Progress":
-                        HabitServices.InsertProgress();
+                        HabitService.InsertProgress();
                         break;
                     case "Delete Progress":
-                        HabitServices.DeleteProgress();
+                        HabitService.DeleteProgress();
                         break;
                     case "View All Progress":
-                        HabitServices.GetProgress();
+                        HabitService.GetProgress();
                         break;
                     case "Update Progress":
-                        HabitServices.UpdateProgress();
+                        HabitService.UpdateProgress();
                         break;
                     case "Quit":
                         Console.WriteLine("Goodbye");

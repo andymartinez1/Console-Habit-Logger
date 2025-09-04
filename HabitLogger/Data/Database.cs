@@ -1,7 +1,7 @@
-﻿using Habit_Logger.Services;
+﻿using HabitLogger.Utils;
 using Microsoft.Data.Sqlite;
 
-namespace Habit_Logger.Data
+namespace HabitLogger.Data
 {
     internal class Database
     {
