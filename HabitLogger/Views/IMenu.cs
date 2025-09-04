@@ -2,5 +2,5 @@
 
 public interface IMenu
 {
-    public static void MainMenu();
+    public void MainMenu();
 }

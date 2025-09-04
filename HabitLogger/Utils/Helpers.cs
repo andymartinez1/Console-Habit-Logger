@@ -1,110 +1,78 @@
-﻿using HabitLogger.Data;
-using Microsoft.Data.Sqlite;
+﻿using System.Globalization;
 
-namespace HabitLogger.Utils
+namespace HabitLogger.Utils;
+
+public class Helpers
 {
-    internal class Helpers
+    public static string GetDateInput(string message)
     {
-        internal static bool IsTableEmpty(string tableName)
+        Console.WriteLine(message);
+        var dateInput = Console.ReadLine();
+
+        while (
+            !DateTime.TryParseExact(
+                dateInput,
+                "MM-dd-yyyy",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out _
+            )
+        )
         {
-            using (var connection = new SqliteConnection(Database.ConnectionString))
-            {
-                connection.Open();
-
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = $"SELECT COUNT(*) FROM {tableName}";
-                    long count = (long)command.ExecuteScalar();
-
-                    return count == 0;
-                }
-            }
+            Console.WriteLine("Invalid date format. Please enter the date in mm-dd-yyyy format.");
+            dateInput = Console.ReadLine();
         }
 
-        internal static void SeedData()
+        return dateInput;
+    }
+
+    public static int GetNumberInput(string message)
+    {
+        Console.WriteLine(message);
+        var numberInput = Console.ReadLine();
+
+        var output = 0;
+        while (!int.TryParse(numberInput, out output) || output < 0)
         {
-            bool recordsTableEmpty = IsTableEmpty("progress");
-            bool habitsTableEmpty = IsTableEmpty("habits");
-
-            if (!recordsTableEmpty || !habitsTableEmpty)
-                return;
-
-            string[] habitNames =
-            {
-                "Walking",
-                "Biking",
-                "Daily Pushups",
-                "Reading",
-                "Water Consumption",
-            };
-            string[] habitUnits = { "Miles", "Miles", "Repetitions", "Pages", "Ounces" };
-            string[] dates = GenerateRandomDates(100);
-            int[] quantities = GenerateRandomQuantities(100, 0, 200);
-
-            using (var connection = new SqliteConnection(Database.ConnectionString))
-            {
-                connection.Open();
-
-                for (int i = 0; i < habitNames.Length; i++)
-                {
-                    var insertSql =
-                        "INSERT INTO habits (Name, MeasurementUnit) VALUES (@Name, @MeasurementUnit);";
-                    var command = new SqliteCommand(insertSql, connection);
-                    command.Parameters.AddWithValue("@Name", habitNames[i]);
-                    command.Parameters.AddWithValue("@MeasurementUnit", habitUnits[i]);
-
-                    command.ExecuteNonQuery();
-                }
-
-                for (int i = 0; i < 100; i++)
-                {
-                    var insertSql =
-                        "INSERT INTO progress (Date, Quantity, HabitId) VALUES (@Date, @Quantity, @HabitId);";
-                    var command = new SqliteCommand(insertSql, connection);
-                    command.Parameters.AddWithValue("@Date", dates[i]);
-                    command.Parameters.AddWithValue("@Quantity", quantities[i]);
-                    command.Parameters.AddWithValue("@HabitId", GetRandomHabitId());
-
-                    command.ExecuteNonQuery();
-                }
-            }
+            Console.WriteLine("Invalid number. Try again");
+            numberInput = Console.ReadLine();
         }
 
-        internal static int[] GenerateRandomQuantities(int count, int min, int max)
+        return output;
+    }
+
+    public static int[] GenerateRandomQuantities(int count, int min, int max)
+    {
+        var random = new Random();
+        var quantities = new int[count];
+
+        for (var i = 0; i < count; i++)
+            quantities[i] = random.Next(min, max + 1);
+
+        return quantities;
+    }
+
+    public static string[] GenerateRandomDates(int count)
+    {
+        var startDate = new DateTime(2025, 1, 1);
+        var range = DateTime.Today - startDate;
+
+        var randomDateStrings = new string[count];
+        var random = new Random();
+
+        for (var i = 0; i < count; i++)
         {
-            Random random = new Random();
-            int[] quantities = new int[count];
-
-            for (int i = 0; i < count; i++)
-            {
-                quantities[i] = random.Next(min, max + 1);
-            }
-
-            return quantities;
+            var daysToAdd = random.Next(0, range.Days);
+            var randomDate = startDate.AddDays(daysToAdd);
+            randomDateStrings[i] = randomDate.ToString("MM-dd-yyyy");
         }
 
-        internal static string[] GenerateRandomDates(int count)
-        {
-            DateTime startDate = new DateTime(2025, 1, 1);
-            TimeSpan range = DateTime.Today - startDate;
+        return randomDateStrings;
+    }
 
-            string[] randomDateStrings = new string[count];
-            Random random = new Random();
-
-            for (int i = 0; i < count; i++)
-            {
-                int daysToAdd = random.Next(0, (int)range.Days);
-                DateTime randomDate = startDate.AddDays(daysToAdd);
-                randomDateStrings[i] = randomDate.ToString("MM-dd-yyyy");
-            }
-
-            return randomDateStrings;
-        }
-
-        internal static int GetRandomHabitId()
-        {
-            Random random = new Random();
-            return random.Next(1, 6);
-        }
+    public static int GetRandomHabitId()
+    {
+        var random = new Random();
+        return random.Next(1, 6);
     }
 }

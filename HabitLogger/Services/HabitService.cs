@@ -1,416 +1,157 @@
-﻿using System.Globalization;
-using HabitLogger.Data;
+﻿using HabitLogger.Data;
 using HabitLogger.Models;
+using HabitLogger.Utils;
 using HabitLogger.Views;
 using Microsoft.Data.Sqlite;
 using Spectre.Console;
 
-namespace HabitLogger.Services
+namespace HabitLogger.Services;
+
+public class HabitService : IHabitService
 {
-    public class HabitService : IHabitService
+    private readonly DatabaseContext _databaseContext;
+
+    public HabitService(DatabaseContext databaseContext)
     {
-        public static void InsertHabit()
-        {
-            string name = AnsiConsole.Ask<string>("Enter the name of the habit:");
-            while (string.IsNullOrWhiteSpace(name))
-            {
-                name = AnsiConsole.Ask<string>(
-                    "Habit name cannot be empty. Enter the name of the habit:"
-                );
-            }
+        _databaseContext = databaseContext;
+    }
 
-            string measurementUnit = AnsiConsole.Ask<string>(
-                "Enter the measurement unit for the habit (e.g., 'pushups', 'minutes', etc.):"
+    public void InsertHabit()
+    {
+        var name = AnsiConsole.Ask<string>("Enter the name of the habit:");
+        while (string.IsNullOrWhiteSpace(name))
+            name = AnsiConsole.Ask<string>(
+                "Habit name cannot be empty. Enter the name of the habit:"
             );
 
-            while (string.IsNullOrWhiteSpace(measurementUnit))
-            {
-                measurementUnit = AnsiConsole.Ask<string>(
-                    "Measurement unit cannot be empty. Enter the measurement unit for the habit:"
-                );
-            }
+        var measurementUnit = AnsiConsole.Ask<string>(
+            "Enter the measurement unit for the habit (e.g., 'pushups', 'minutes', etc.):"
+        );
 
-            using (var connection = new SqliteConnection(Database.ConnectionString))
-            {
-                connection.Open();
-
-                using (var tableCommand = connection.CreateCommand())
-                {
-                    tableCommand.CommandText =
-                        $"INSERT INTO habits(Name, MeasurementUnit) VALUES ('{name}', '{measurementUnit}')";
-
-                    tableCommand.ExecuteNonQuery();
-                }
-
-                connection.Close();
-            }
-        }
-
-        public static void GetHabits()
-        {
-            List<Habit> habits = new();
-
-            using (var connection = new SqliteConnection(Database.ConnectionString))
-            {
-                connection.Open();
-                var tableCmd = connection.CreateCommand();
-                tableCmd.CommandText = "SELECT * FROM habits";
-
-                using (SqliteDataReader reader = tableCmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                            try
-                            {
-                                habits.Add(
-                                    new Habit(
-                                        reader.GetInt32(0),
-                                        reader.GetString(1),
-                                        reader.GetString(2)
-                                    )
-                                );
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"Error getting record: {ex.Message}. ");
-                            }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                }
-            }
-
-            ViewAllHabits(habits);
-        }
-
-        public static void ViewAllHabits(List<Data.Data.Habit> habits)
-        {
-            var table = new Table();
-            table.AddColumn("Id");
-            table.AddColumn("Name");
-            table.AddColumn("Measurement Unit");
-            foreach (var habit in habits)
-            {
-                table.AddRow(habit.Id.ToString(), habit.Name, habit.UnitOfMeasurement);
-            }
-
-            AnsiConsole.Write(table);
-        }
-
-        public static void DeleteHabit()
-        {
-            GetHabits();
-
-            var id = GetNumberInput("Please type the id of the habit you want to delete.");
-
-            using (var connection = new SqliteConnection(Database.ConnectionString))
-            {
-                using (var command = connection.CreateCommand())
-                {
-                    connection.Open();
-
-                    command.CommandText = @$"DELETE FROM habits WHERE Id = {id}";
-
-                    command.ExecuteNonQuery();
-                }
-
-                connection.Close();
-            }
-        }
-
-        public static void UpdateHabit()
-        {
-            GetHabits();
-
-            var id = GetNumberInput("Please type the id of the habit you want to update.");
-
-            string name = "";
-            bool updateName = AnsiConsole.Confirm("Update name?");
-            if (updateName)
-            {
-                name = AnsiConsole.Ask<string>("Habit's new name:");
-                while (string.IsNullOrEmpty(name))
-                {
-                    name = AnsiConsole.Ask<string>("Habit's name can't be empty. Try again:");
-                }
-            }
-
-            string unit = "";
-            bool updateUnit = AnsiConsole.Confirm("Update Unit of Measurement?");
-            if (updateUnit)
-            {
-                unit = AnsiConsole.Ask<string>("Habit's Unit of Measurement:");
-                while (string.IsNullOrEmpty(unit))
-                {
-                    unit = AnsiConsole.Ask<string>("Habit's unit can't be empty. Try again:");
-                }
-            }
-
-            string query;
-            if (updateName && updateUnit)
-            {
-                query =
-                    $"UPDATE habits SET Name = '{name}', MeasurementUnit = '{unit}' WHERE Id = {id}";
-            }
-            else if (updateName && !updateUnit)
-            {
-                query = $"UPDATE habits SET Name = '{name}' WHERE Id = {id}";
-            }
-            else
-            {
-                query = $"UPDATE habits SET MeasurementUnit = '{unit}' WHERE Id = {id}";
-            }
-
-            using (var connection = new SqliteConnection(Database.ConnectionString))
-            {
-                connection.Open();
-
-                var tableCmd = connection.CreateCommand();
-
-                tableCmd.CommandText = query;
-
-                tableCmd.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-
-        public static void InsertProgress()
-        {
-            string date = GetDateInput(
-                "Enter the date. (Format: mm-dd-yyyy). Type 0 to return to the main menu."
+        while (string.IsNullOrWhiteSpace(measurementUnit))
+            measurementUnit = AnsiConsole.Ask<string>(
+                "Measurement unit cannot be empty. Enter the measurement unit for the habit:"
             );
 
-            GetHabits();
-
-            var habitId = GetNumberInput(
-                "Enter the ID of the habit for which you want to add a record. Type 0 to return to the main menu."
-            );
-            int quantity = GetNumberInput("Enter quantity. Type 0 to return to the main menu.");
-
-            Console.Clear();
-
-            using (var connection = new SqliteConnection(Database.ConnectionString))
-            {
-                connection.Open();
-
-                using (var tableCommand = connection.CreateCommand())
-                {
-                    tableCommand.CommandText =
-                        $"INSERT INTO progress(date, quantity, habitId) VALUES ('{date}', {quantity}, {habitId})";
-
-                    tableCommand.ExecuteNonQuery();
-                }
-
-                connection.Close();
-            }
-        }
-
-        public static void GetProgress()
+        using (var connection = _databaseContext.ConnectionString)
         {
-            List<ProgressWithHabit> records = new();
+            connection.Open();
 
-            using (var connection = new SqliteConnection(Database.ConnectionString))
+            using (var tableCommand = connection.CreateCommand())
             {
-                connection.Open();
+                tableCommand.CommandText =
+                    $"INSERT INTO habits(Name, MeasurementUnit) VALUES ('{name}', '{measurementUnit}')";
 
-                using (var tableCommand = connection.CreateCommand())
-                {
-                    tableCommand.CommandText =
-                        @"
-                    SELECT progress.Id, progress.Date, progress.Quantity, progress.HabitId, habits.Name AS HabitName, habits.MeasurementUnit
-                    FROM progress
-                    INNER JOIN habits ON progress.HabitId = habits.Id";
+                tableCommand.ExecuteNonQuery();
+            }
 
-                    using (SqliteDataReader reader = tableCommand.ExecuteReader())
-                    {
-                        if (reader.HasRows)
+            connection.Close();
+        }
+    }
+
+    public void GetHabits()
+    {
+        List<Habit> habits = new();
+
+        using (var connection = _databaseContext.ConnectionString)
+        {
+            connection.Open();
+
+            var tableCmd = connection.CreateCommand();
+
+            tableCmd.CommandText = "SELECT * FROM habits";
+
+            using (var reader = tableCmd.ExecuteReader())
+            {
+                if (reader.HasRows)
+                    while (reader.Read())
+                        try
                         {
-                            while (reader.Read())
+                            var habit = new Habit
                             {
-                                try
-                                {
-                                    records.Add(
-                                        new ProgressWithHabit(
-                                            reader.GetInt32(0),
-                                            DateTime.ParseExact(
-                                                reader.GetString(1),
-                                                "MM-dd-yyyy",
-                                                CultureInfo.InvariantCulture
-                                            ),
-                                            reader.GetInt32(2),
-                                            reader.GetString(4),
-                                            reader.GetString(5)
-                                        )
-                                    );
-                                }
-                                catch (FormatException ex)
-                                {
-                                    Console.WriteLine($"Error parsing record: {ex.Message}");
-                                }
-                            }
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                UnitOfMeasurement = reader.GetString(2),
+                            };
+                            habits.Add(habit);
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            Console.WriteLine("No progress found.");
+                            Console.WriteLine($"Error getting record: {ex.Message}. ");
                         }
-                    }
-                }
+                else
+                    Console.WriteLine("No rows found");
             }
-
-            ViewAllProgress(records);
         }
 
-        public static void ViewAllProgress(List<Data.Data.ProgressWithHabit> progress)
+        UserInterface.ViewAllHabits(habits);
+    }
+
+    public void DeleteHabit()
+    {
+        GetHabits();
+
+        var id = Helpers.GetNumberInput("Please type the id of the habit you want to delete.");
+
+        using (var connection = _databaseContext.ConnectionString)
         {
-            var table = new Table();
-            table.AddColumn("Id");
-            table.AddColumn("Date");
-            table.AddColumn("Quantity");
-            table.AddColumn("Habit Name");
-
-            foreach (var record in progress)
-            {
-                table.AddRow(
-                    record.Id.ToString(),
-                    record.Date.ToString("D"),
-                    $"{record.Quantity} {record.MeasurementUnit}",
-                    record.HabitName.ToString()
-                );
-            }
-
-            AnsiConsole.Write(table);
-        }
-
-        public static void DeleteProgress()
-        {
-            GetProgress();
-
-            var id = GetNumberInput(
-                "Enter the ID of the record you want to delete. Type 0 to return to the main menu."
-            );
-
-            using (var connection = new SqliteConnection(Database.ConnectionString))
+            using (var command = connection.CreateCommand())
             {
                 connection.Open();
 
-                using (var tableCommand = connection.CreateCommand())
-                {
-                    tableCommand.CommandText = $"DELETE FROM progress WHERE Id = {id}";
+                command.CommandText = @$"DELETE FROM habits WHERE Id = {id}";
 
-                    int rowsAffected = tableCommand.ExecuteNonQuery();
-                    if (rowsAffected != 0)
-                    {
-                        Console.WriteLine($"Record with ID {id} deleted successfully.");
-                    }
-                }
-
-                connection.Close();
+                command.ExecuteNonQuery();
             }
+
+            connection.Close();
+        }
+    }
+
+    public void UpdateHabit()
+    {
+        GetHabits();
+
+        var id = Helpers.GetNumberInput("Please type the id of the habit you want to update.");
+
+        var name = "";
+        var updateName = AnsiConsole.Confirm("Update name?");
+        if (updateName)
+        {
+            name = AnsiConsole.Ask<string>("Habit's new name:");
+            while (string.IsNullOrEmpty(name))
+                name = AnsiConsole.Ask<string>("Habit's name can't be empty. Try again:");
         }
 
-        public static void UpdateProgress()
+        var unit = "";
+        var updateUnit = AnsiConsole.Confirm("Update Unit of Measurement?");
+        if (updateUnit)
         {
-            GetProgress();
-
-            var id = GetNumberInput(
-                "Enter the ID of the record you want to update. Type 0 to return to the main menu."
-            );
-
-            string date = "";
-            bool updateDate = AnsiConsole.Confirm("Do you want to update the date?");
-            if (updateDate)
-            {
-                date = GetDateInput(
-                    "Enter the new date. (Format: mm-dd-yyyy). Type 0 to return to the main menu."
-                );
-            }
-
-            int quantity = 0;
-            bool updateQuantity = AnsiConsole.Confirm("Do you want to update the quantity?");
-            if (updateQuantity)
-            {
-                quantity = GetNumberInput(
-                    "Enter the new quantity. Type 0 to return to the main menu."
-                );
-            }
-
-            string query;
-            if (updateDate && updateQuantity)
-            {
-                query =
-                    $"UPDATE progress SET Date = '{date}', Quantity = {quantity} WHERE Id = {id}";
-            }
-            else if (updateDate && !updateQuantity)
-            {
-                query = $"UPDATE progress SET Date = '{date}' WHERE Id = {id}";
-            }
-            else
-            {
-                query = $"UPDATE progress SET Quantity = {quantity} WHERE Id = {id}";
-            }
-
-            using (var connection = new SqliteConnection(Database.ConnectionString))
-            {
-                connection.Open();
-
-                using (var tableCommand = connection.CreateCommand())
-                {
-                    tableCommand.CommandText = query;
-
-                    tableCommand.ExecuteNonQuery();
-                }
-
-                connection.Close();
-            }
+            unit = AnsiConsole.Ask<string>("Habit's Unit of Measurement:");
+            while (string.IsNullOrEmpty(unit))
+                unit = AnsiConsole.Ask<string>("Habit's unit can't be empty. Try again:");
         }
 
-        public static string GetDateInput(string message)
+        string query;
+        if (updateName && updateUnit)
+            query =
+                $"UPDATE habits SET Name = '{name}', MeasurementUnit = '{unit}' WHERE Id = {id}";
+        else if (updateName && !updateUnit)
+            query = $"UPDATE habits SET Name = '{name}' WHERE Id = {id}";
+        else
+            query = $"UPDATE habits SET MeasurementUnit = '{unit}' WHERE Id = {id}";
+
+        using (var connection = _databaseContext.ConnectionString)
         {
-            Console.WriteLine(message);
-            string dateInput = Console.ReadLine();
+            connection.Open();
 
-            if (dateInput == "0")
-                Menu.MainMenu();
+            var tableCmd = connection.CreateCommand();
 
-            while (
-                !DateTime.TryParseExact(
-                    dateInput,
-                    "MM-dd-yyyy",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out _
-                )
-            )
-            {
-                Console.WriteLine(
-                    "Invalid date format. Please enter the date in mm-dd-yyyy format."
-                );
-                dateInput = Console.ReadLine();
-            }
+            tableCmd.CommandText = query;
 
-            return dateInput;
-        }
+            tableCmd.ExecuteNonQuery();
 
-        public static int GetNumberInput(string message)
-        {
-            Console.WriteLine(message);
-            string numberInput = Console.ReadLine();
-
-            if (numberInput == "0")
-                Menu.MainMenu();
-
-            int output = 0;
-            while (!int.TryParse(numberInput, out output) || output < 0)
-            {
-                Console.WriteLine("Invalid number. Try again");
-                numberInput = Console.ReadLine();
-            }
-
-            return output;
+            connection.Close();
         }
     }
 }
