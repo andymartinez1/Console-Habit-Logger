@@ -6,7 +6,7 @@ public interface IProgressService
 
     public void GetProgress();
 
-    public void DeleteProgress();
-
     public void UpdateProgress();
+
+    public void DeleteProgress();
 }

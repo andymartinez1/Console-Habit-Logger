@@ -6,7 +6,7 @@ public interface IHabitService
 
     public void GetHabits();
 
-    public void DeleteHabit();
-
     public void UpdateHabit();
+
+    public void DeleteHabit();
 }

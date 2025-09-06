@@ -1,4 +1,6 @@
-﻿using HabitLogger.Services;
+﻿using HabitLogger.Enums;
+using HabitLogger.Services;
+using HabitLogger.Utils;
 using Spectre.Console;
 
 namespace HabitLogger.Views;
@@ -14,6 +16,18 @@ public class Menu : IMenu
         _progressService = progressService;
     }
 
+    private readonly MenuOptions[] _menuOptions =
+    [
+        MenuOptions.AddHabit,
+        MenuOptions.DeleteHabit,
+        MenuOptions.UpdateHabit,
+        MenuOptions.AddProgress,
+        MenuOptions.DeleteProgress,
+        MenuOptions.ViewAllProgress,
+        MenuOptions.UpdateProgress,
+        MenuOptions.Quit,
+    ];
+
     public void MainMenu()
     {
         var isMenuRunning = true;
@@ -21,44 +35,36 @@ public class Menu : IMenu
         while (isMenuRunning)
         {
             var usersChoice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
+                new SelectionPrompt<MenuOptions>()
                     .Title("Welcome! Please select from the following options:")
-                    .AddChoices(
-                        "Add Habit",
-                        "Delete Habit",
-                        "Update Habit",
-                        "Add Progress",
-                        "Delete Progress",
-                        "View All Progress",
-                        "Update Progress",
-                        "Quit"
-                    )
+                    .AddChoices(_menuOptions)
+                    .UseConverter(c => c.GetDisplayName())
             );
 
             switch (usersChoice)
             {
-                case "Add Habit":
+                case MenuOptions.AddHabit:
                     _habitService.InsertHabit();
                     break;
-                case "Delete Habit":
+                case MenuOptions.DeleteHabit:
                     _habitService.DeleteHabit();
                     break;
-                case "Update Habit":
+                case MenuOptions.UpdateHabit:
                     _habitService.UpdateHabit();
                     break;
-                case "Add Progress":
+                case MenuOptions.AddProgress:
                     _progressService.InsertProgress();
                     break;
-                case "Delete Progress":
+                case MenuOptions.DeleteProgress:
                     _progressService.DeleteProgress();
                     break;
-                case "View All Progress":
+                case MenuOptions.ViewAllProgress:
                     _progressService.GetProgress();
                     break;
-                case "Update Progress":
+                case MenuOptions.UpdateProgress:
                     _progressService.UpdateProgress();
                     break;
-                case "Quit":
+                case MenuOptions.Quit:
                     Console.WriteLine("Goodbye");
                     isMenuRunning = false;
                     break;

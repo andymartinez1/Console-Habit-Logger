@@ -1,6 +1,8 @@
 ﻿using System.Data;
+using Dapper;
 using HabitLogger.Utils;
 using Microsoft.Data.Sqlite;
+using SQLitePCL;
 
 namespace HabitLogger.Data;
 
@@ -17,12 +19,10 @@ public class DatabaseContext
     {
         using (var connection = ConnectionString)
         {
-            using (var tableCommand = connection.CreateCommand())
-            {
-                connection.Open();
+            connection.Open();
 
-                tableCommand.CommandText =
-                    @"CREATE TABLE IF NOT EXISTS progress (
+            var createProgressTableQuery =
+                @"CREATE TABLE IF NOT EXISTS progress (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         Date TEXT,
                         Quantity INTEGER,
@@ -30,21 +30,20 @@ public class DatabaseContext
                         FOREIGN KEY(habitId) REFERENCES habits(Id) ON DELETE CASCADE
                         )";
 
-                tableCommand.ExecuteNonQuery();
+            connection.Execute(createProgressTableQuery);
 
-                tableCommand.CommandText =
-                    @"CREATE TABLE IF NOT EXISTS habits (
+            var createHabitTableQuery =
+                @"CREATE TABLE IF NOT EXISTS habits (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         Name TEXT,
                         MeasurementUnit TEXT
                         )";
 
-                tableCommand.ExecuteNonQuery();
-            }
-        }
+            connection.Execute(createHabitTableQuery);
 
-        // Seed the database with initial data if needed
-        SeedData();
+            // Seed the database with initial data if needed
+            SeedData();
+        }
     }
 
     private void SeedData()
@@ -73,30 +72,30 @@ public class DatabaseContext
 
             for (var i = 0; i < habitNames.Length; i++)
             {
-                var insertSql =
+                var insertHabitQuery =
                     "INSERT INTO habits (Name, MeasurementUnit) VALUES (@Name, @MeasurementUnit);";
-                var command = new SqliteCommand(insertSql);
+                var command = new SqliteCommand(insertHabitQuery);
                 command.Parameters.AddWithValue("@Name", habitNames[i]);
                 command.Parameters.AddWithValue("@MeasurementUnit", habitUnits[i]);
 
-                command.ExecuteNonQuery();
+                connection.Execute(insertHabitQuery);
             }
 
             for (var i = 0; i < 100; i++)
             {
-                var insertSql =
+                var insertProgressQuery =
                     "INSERT INTO progress (Date, Quantity, HabitId) VALUES (@Date, @Quantity, @HabitId);";
-                var command = new SqliteCommand(insertSql);
+                var command = new SqliteCommand(insertProgressQuery);
                 command.Parameters.AddWithValue("@Date", dates[i]);
                 command.Parameters.AddWithValue("@Quantity", quantities[i]);
                 command.Parameters.AddWithValue("@HabitId", Helpers.GetRandomHabitId());
 
-                command.ExecuteNonQuery();
+                connection.Execute(insertProgressQuery);
             }
         }
     }
 
-    internal bool IsTableEmpty(string tableName)
+    private bool IsTableEmpty(string tableName)
     {
         using (var connection = ConnectionString)
         {
@@ -104,8 +103,7 @@ public class DatabaseContext
 
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = $"SELECT COUNT(*) FROM {tableName}";
-                var count = (long)command.ExecuteScalar();
+                var count = connection.ExecuteScalar<int>($"SELECT COUNT(*) FROM {tableName}");
 
                 return count == 0;
             }

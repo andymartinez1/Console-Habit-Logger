@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using HabitLogger.Data;
+using HabitLogger.Repository;
 using HabitLogger.Services;
 using HabitLogger.Views;
 using Microsoft.Data.Sqlite;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 // Configuring the Dependency Injection container
 var services = new ServiceCollection();
 
-var configuration = new ConfigurationBuilder()
+IConfigurationRoot configuration = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json")
     .Build();
@@ -20,6 +21,8 @@ var connectionString =
 // Registering the dependencies
 services.AddTransient<IDbConnection>(sp => new SqliteConnection(connectionString));
 services.AddScoped<DatabaseContext>();
+services.AddScoped<IHabitRepository, HabitRepository>();
+services.AddScoped<IProgressRepository, ProgressRepository>();
 services.AddScoped<IHabitService, HabitService>();
 services.AddScoped<IProgressService, ProgressService>();
 services.AddScoped<IMenu, Menu>();

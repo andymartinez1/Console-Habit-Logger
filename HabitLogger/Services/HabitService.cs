@@ -1,5 +1,6 @@
 ﻿using HabitLogger.Data;
 using HabitLogger.Models;
+using HabitLogger.Repository;
 using HabitLogger.Utils;
 using HabitLogger.Views;
 using Microsoft.Data.Sqlite;
@@ -9,11 +10,11 @@ namespace HabitLogger.Services;
 
 public class HabitService : IHabitService
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly HabitRepository _habitRepository;
 
-    public HabitService(DatabaseContext databaseContext)
+    public HabitService(HabitRepository habitRepository)
     {
-        _databaseContext = databaseContext;
+        _habitRepository = habitRepository;
     }
 
     public void InsertHabit()
@@ -32,86 +33,12 @@ public class HabitService : IHabitService
             measurementUnit = AnsiConsole.Ask<string>(
                 "Measurement unit cannot be empty. Enter the measurement unit for the habit:"
             );
-
-        using (var connection = _databaseContext.ConnectionString)
-        {
-            connection.Open();
-
-            using (var tableCommand = connection.CreateCommand())
-            {
-                tableCommand.CommandText =
-                    $"INSERT INTO habits(Name, MeasurementUnit) VALUES ('{name}', '{measurementUnit}')";
-
-                tableCommand.ExecuteNonQuery();
-            }
-
-            connection.Close();
-        }
     }
 
-    public void GetHabits()
-    {
-        List<Habit> habits = new();
-
-        using (var connection = _databaseContext.ConnectionString)
-        {
-            connection.Open();
-
-            var tableCmd = connection.CreateCommand();
-
-            tableCmd.CommandText = "SELECT * FROM habits";
-
-            using (var reader = tableCmd.ExecuteReader())
-            {
-                if (reader.HasRows)
-                    while (reader.Read())
-                        try
-                        {
-                            var habit = new Habit
-                            {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                UnitOfMeasurement = reader.GetString(2),
-                            };
-                            habits.Add(habit);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Error getting record: {ex.Message}. ");
-                        }
-                else
-                    Console.WriteLine("No rows found");
-            }
-        }
-
-        UserInterface.ViewAllHabits(habits);
-    }
-
-    public void DeleteHabit()
-    {
-        GetHabits();
-
-        var id = Helpers.GetNumberInput("Please type the id of the habit you want to delete.");
-
-        using (var connection = _databaseContext.ConnectionString)
-        {
-            using (var command = connection.CreateCommand())
-            {
-                connection.Open();
-
-                command.CommandText = @$"DELETE FROM habits WHERE Id = {id}";
-
-                command.ExecuteNonQuery();
-            }
-
-            connection.Close();
-        }
-    }
+    public void GetHabits() { }
 
     public void UpdateHabit()
     {
-        GetHabits();
-
         var id = Helpers.GetNumberInput("Please type the id of the habit you want to update.");
 
         var name = "";
@@ -131,27 +58,7 @@ public class HabitService : IHabitService
             while (string.IsNullOrEmpty(unit))
                 unit = AnsiConsole.Ask<string>("Habit's unit can't be empty. Try again:");
         }
-
-        string query;
-        if (updateName && updateUnit)
-            query =
-                $"UPDATE habits SET Name = '{name}', MeasurementUnit = '{unit}' WHERE Id = {id}";
-        else if (updateName && !updateUnit)
-            query = $"UPDATE habits SET Name = '{name}' WHERE Id = {id}";
-        else
-            query = $"UPDATE habits SET MeasurementUnit = '{unit}' WHERE Id = {id}";
-
-        using (var connection = _databaseContext.ConnectionString)
-        {
-            connection.Open();
-
-            var tableCmd = connection.CreateCommand();
-
-            tableCmd.CommandText = query;
-
-            tableCmd.ExecuteNonQuery();
-
-            connection.Close();
-        }
     }
+
+    public void DeleteHabit() { }
 }
