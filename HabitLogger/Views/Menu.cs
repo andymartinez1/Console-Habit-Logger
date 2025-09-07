@@ -8,13 +8,6 @@ namespace HabitLogger.Views;
 public class Menu : IMenu
 {
     private readonly IHabitService _habitService;
-    private readonly IProgressService _progressService;
-
-    public Menu(IHabitService habitService, IProgressService progressService)
-    {
-        _habitService = habitService;
-        _progressService = progressService;
-    }
 
     private readonly MenuOptions[] _menuOptions =
     [
@@ -27,6 +20,14 @@ public class Menu : IMenu
         MenuOptions.UpdateProgress,
         MenuOptions.Quit,
     ];
+
+    private readonly IProgressService _progressService;
+
+    public Menu(IHabitService habitService, IProgressService progressService)
+    {
+        _habitService = habitService;
+        _progressService = progressService;
+    }
 
     public void MainMenu()
     {

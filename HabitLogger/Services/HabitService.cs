@@ -1,9 +1,5 @@
-﻿using HabitLogger.Data;
-using HabitLogger.Models;
-using HabitLogger.Repository;
+﻿using HabitLogger.Repository;
 using HabitLogger.Utils;
-using HabitLogger.Views;
-using Microsoft.Data.Sqlite;
 using Spectre.Console;
 
 namespace HabitLogger.Services;

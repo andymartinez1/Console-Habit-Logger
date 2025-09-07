@@ -1,75 +1,25 @@
-﻿using Dapper;
-using HabitLogger.Data;
+﻿using HabitLogger.Data;
 using HabitLogger.Models;
 
 namespace HabitLogger.Repository;
 
 public class HabitRepository : IHabitRepository
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly HabitLoggerDbContext _habitLoggerDbContext;
 
-    public HabitRepository(DatabaseContext databaseContext)
+    public HabitRepository(HabitLoggerDbContext habitLoggerDbContext)
     {
-        _databaseContext = databaseContext;
+        _habitLoggerDbContext = habitLoggerDbContext;
     }
 
-    public void InsertHabit(Habit habit)
-    {
-        using (var connection = _databaseContext.ConnectionString)
-        {
-            connection.Open();
-
-            var insertHabitQuery =
-                $"INSERT INTO habits(Name, MeasurementUnit) VALUES ('{habit.Name}', '{habit.UnitOfMeasurement}')";
-
-            connection.Execute(insertHabitQuery);
-
-            connection.Close();
-        }
-    }
+    public void InsertHabit(Habit habit) { }
 
     public List<Habit> GetHabits()
     {
-        using (var connection = _databaseContext.ConnectionString)
-        {
-            connection.Open();
-
-            var getHabitsQuery = $"SELECT * FROM habits";
-
-            var habits = connection.Query<Habit>(getHabitsQuery).ToList();
-
-            return habits;
-        }
+        return null;
     }
 
-    public void UpdateHabit(Habit habit)
-    {
-        using (var connection = _databaseContext.ConnectionString)
-        {
-            connection.Open();
+    public void UpdateHabit(Habit habit) { }
 
-            var updateHabitQuery =
-                $@"UPDATE habits 
-                SET Name = '{habit.Name}', MeasurementUnit = '{habit.UnitOfMeasurement}' 
-                WHERE Id = {habit.Id}";
-
-            connection.Execute(updateHabitQuery);
-
-            connection.Close();
-        }
-    }
-
-    public void DeleteHabit(int id)
-    {
-        using (var connection = _databaseContext.ConnectionString)
-        {
-            connection.Open();
-
-            var deleteHabitQuery = $"DELETE FROM habits WHERE Id = {id}";
-
-            connection.Execute(deleteHabitQuery);
-
-            connection.Close();
-        }
-    }
+    public void DeleteHabit(int id) { }
 }

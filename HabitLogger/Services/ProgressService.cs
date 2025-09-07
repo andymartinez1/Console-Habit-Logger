@@ -1,22 +1,18 @@
-﻿using System.Globalization;
-using HabitLogger.Data;
+﻿using HabitLogger.Data;
 using HabitLogger.Utils;
-using HabitLogger.Views;
-using Microsoft.Data.Sqlite;
 using Spectre.Console;
-using Progress = HabitLogger.Models.Progress;
 
 namespace HabitLogger.Services;
 
 public class ProgressService : IProgressService
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly HabitLoggerDbContext _habitLoggerDbContext;
     private readonly IHabitService _habitService;
 
-    public ProgressService(IHabitService habitService, DatabaseContext databaseContext)
+    public ProgressService(IHabitService habitService, HabitLoggerDbContext habitLoggerDbContext)
     {
         _habitService = habitService;
-        _databaseContext = databaseContext;
+        _habitLoggerDbContext = habitLoggerDbContext;
     }
 
     public void InsertProgress()
