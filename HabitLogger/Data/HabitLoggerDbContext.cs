@@ -1,19 +1,41 @@
-﻿using System.Data;
+﻿using HabitLogger.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace HabitLogger.Data;
 
-public class HabitLoggerDbContext
+public class HabitLoggerDbContext : DbContext
 {
-    internal readonly IDbConnection ConnectionString;
+    public DbSet<Habit> Habits { get; set; }
+    public DbSet<Progress> ProgressList { get; set; }
 
-    public HabitLoggerDbContext(IDbConnection connectionString)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        ConnectionString = connectionString;
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
     }
 
-    internal void CreateDatabase() { }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder
+            .Entity<Progress>()
+            .HasMany(p => p.Habit)
+            .WithOne(h => h.Progress)
+            .HasForeignKey(p => p.HabitId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+    }
 
-    private void SeedData() { }
+    internal void CreateDatabase()
+    {
+    }
+
+    private void SeedData()
+    {
+    }
 
     private bool IsTableEmpty(string tableName)
     {
