@@ -1,21 +1,11 @@
-﻿using System.Data;
-using HabitLogger.Data;
+﻿using HabitLogger.Data;
 using HabitLogger.Repository;
 using HabitLogger.Services;
 using HabitLogger.Views;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 // Configuring the Dependency Injection container
 var services = new ServiceCollection();
-
-var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json")
-    .Build();
-
-var connectionString =
-    configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException();
 
 // Registering the dependencies
 services.AddScoped<HabitLoggerDbContext>();
@@ -32,7 +22,6 @@ var servicesProvider = services.BuildServiceProvider();
 using (var scope = servicesProvider.CreateScope())
 {
     var data = scope.ServiceProvider.GetRequiredService<HabitLoggerDbContext>();
-    data.CreateDatabase();
 }
 
 // Get the main menu and run the app

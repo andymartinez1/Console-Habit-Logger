@@ -8,8 +8,6 @@ public class Progress
 
     public int Quantity { get; set; }
 
-    public string UnitOfMeasurement { get; set; } = string.Empty;
-
     public int HabitId { get; set; }
 
     public Habit Habit { get; set; }

@@ -30,8 +30,8 @@ public static class UserInterface
             table.AddRow(
                 record.Id.ToString(),
                 record.Date.ToString("D"),
-                $"{record.Quantity} {record.UnitOfMeasurement}",
-                record.HabitName
+                $"{record.Quantity} {record.Habit.UnitOfMeasurement}",
+                record.HabitId.ToString()
             );
 
         AnsiConsole.Write(table);

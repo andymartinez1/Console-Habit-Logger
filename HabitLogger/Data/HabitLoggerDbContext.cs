@@ -21,21 +21,14 @@ public class HabitLoggerDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .Entity<Progress>()
-            .HasMany(p => p.Habit)
-            .WithOne(h => h.Progress)
-            .HasForeignKey(p => p.HabitId)
+            .Entity<Habit>()
+            .HasMany(h => h.ProgressList)
+            .WithOne(p => p.Habit)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
     }
 
-    internal void CreateDatabase()
-    {
-    }
-
-    private void SeedData()
-    {
-    }
+    private void SeedData() { }
 
     private bool IsTableEmpty(string tableName)
     {

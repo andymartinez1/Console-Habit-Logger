@@ -6,5 +6,7 @@ public class Habit
 
     public string Name { get; set; } = string.Empty;
 
-    public List<Progress> ProgressList { get; set; } = new List<Progress>();
+    public string UnitOfMeasurement { get; set; } = string.Empty;
+
+    public List<Progress> ProgressList { get; set; } = new();
 }

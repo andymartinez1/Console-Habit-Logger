@@ -8,6 +8,8 @@ public interface IProgressRepository
 
     public List<Progress> GetProgress();
 
+    public Progress GetProgressById(int id);
+
     public void UpdateProgress(Progress progress);
 
     public void DeleteProgress(int id);

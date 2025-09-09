@@ -8,6 +8,8 @@ public interface IHabitRepository
 
     public List<Habit> GetHabits();
 
+    public Habit GetHabitById(int id);
+
     public void UpdateHabit(Habit habit);
 
     public void DeleteHabit(int id);
