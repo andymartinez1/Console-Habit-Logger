@@ -1,4 +1,6 @@
-﻿namespace HabitLogger.Services;
+﻿using HabitLogger.Models;
+
+namespace HabitLogger.Services;
 
 public interface IHabitService
 {
@@ -6,7 +8,7 @@ public interface IHabitService
 
     public void GetHabits();
 
-    public void GetHabitById();
+    public Habit GetHabitById();
 
     public void UpdateHabit();
 

@@ -44,39 +44,46 @@ public class HabitService : IHabitService
         UserInterface.ViewAllHabits(habits);
     }
 
-    public void GetHabitById()
+    public Habit GetHabitById()
     {
         GetHabits();
 
         var id = UserInputValidation.ValidateNumberInput("Select the ID of the Habit");
 
-        _habitRepository.GetHabitById(id);
+        return _habitRepository.GetHabitById(id);
     }
 
     public void UpdateHabit()
     {
-        var id = UserInputValidation.ValidateNumberInput(
-            "Please type the id of the habit you want to update."
-        );
+        var habit = GetHabitById();
 
-        var name = "";
+        habit.Id = UserInputValidation.ValidateNumberInput(
+           "Please type the id of the habit you want to update."
+       );
+
+        habit.Name = "";
         var updateName = AnsiConsole.Confirm("Update name?");
         if (updateName)
         {
-            name = AnsiConsole.Ask<string>("Habit's new name:");
-            while (string.IsNullOrEmpty(name))
-                name = AnsiConsole.Ask<string>("Habit's name can't be empty. Try again:");
+            habit.Name = AnsiConsole.Ask<string>("Habit's new name:");
+            while (string.IsNullOrEmpty(habit.Name))
+                habit.Name = AnsiConsole.Ask<string>("Habit's name can't be empty. Try again:");
         }
 
-        var unit = "";
+        habit.UnitOfMeasurement = "";
         var updateUnit = AnsiConsole.Confirm("Update Unit of Measurement?");
         if (updateUnit)
         {
-            unit = AnsiConsole.Ask<string>("Habit's Unit of Measurement:");
-            while (string.IsNullOrEmpty(unit))
-                unit = AnsiConsole.Ask<string>("Habit's unit can't be empty. Try again:");
+            habit.UnitOfMeasurement = AnsiConsole.Ask<string>("Habit's Unit of Measurement:");
+            while (string.IsNullOrEmpty(habit.UnitOfMeasurement))
+                habit.UnitOfMeasurement = AnsiConsole.Ask<string>("Habit's unit can't be empty. Try again:");
         }
     }
 
-    public void DeleteHabit() { }
+    public void DeleteHabit()
+    {
+        var id = UserInputValidation.ValidateNumberInput("Select the ID of the Habit");
+
+        _habitRepository.DeleteHabit(id);
+    }
 }
