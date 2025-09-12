@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using HabitLogger.Models;
+using Spectre.Console;
 
 namespace HabitLogger.Utils;
 
@@ -39,5 +41,18 @@ public static class UserInputValidation
         }
 
         return output;
+    }
+
+    public static bool IsHabitValid(Habit habit)
+    {
+        if (habit == null)
+        {
+            AnsiConsole.MarkupLine(
+                "[Red]No habit found. Please select an existing habit from the list.[/]"
+            );
+            return false;
+        }
+
+        return true;
     }
 }

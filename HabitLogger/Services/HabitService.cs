@@ -60,13 +60,8 @@ public class HabitService : IHabitService
     {
         var habit = GetHabitById();
 
-        if (habit == null)
-        {
-            AnsiConsole.MarkupLine(
-                "[Red]No habit found. Please select an existing habit from the list.[/]"
-            );
+        if (!UserInputValidation.IsHabitValid(habit))
             return;
-        }
 
         var updateName = AnsiConsole.Confirm("Update name?");
         if (updateName)
@@ -97,13 +92,8 @@ public class HabitService : IHabitService
     {
         var habit = GetHabitById();
 
-        if (habit == null)
-        {
-            AnsiConsole.MarkupLine(
-                "[Red]No habit found. Please select an existing habit from the list.[/]"
-            );
+        if (!UserInputValidation.IsHabitValid(habit))
             return;
-        }
 
         var id = habit.Id;
 
