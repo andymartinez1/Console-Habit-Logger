@@ -41,5 +41,7 @@ public class HabitRepository : IHabitRepository
         var habit = GetHabitById(id);
 
         _habitLoggerDbContext.Habits.Remove(habit);
+
+        _habitLoggerDbContext.SaveChanges();
     }
 }

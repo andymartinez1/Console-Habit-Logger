@@ -2,7 +2,7 @@
   "profiles": {
     "Habit-Logger": {
       "commandName": "Project",
-      "workingDirectory": "D:\\C#\\.NET-Console-Apps\\Console-Habit-Logger\\HabitLogger"
+      "workingDirectory": "X:\\C#\\.NET-Console-Apps\\Habit-Logger\\HabitLogger"
     }
   }
 }

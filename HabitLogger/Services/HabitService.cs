@@ -41,7 +41,10 @@ public class HabitService : IHabitService
     {
         var habits = _habitRepository.GetHabits();
 
-        UserInterface.ViewAllHabits(habits);
+        if (habits.Any())
+            UserInterface.ViewAllHabits(habits);
+        else
+            AnsiConsole.MarkupLine("[Red]No habits to display. Please add a new habit[/]");
     }
 
     public Habit GetHabitById()
@@ -57,11 +60,14 @@ public class HabitService : IHabitService
     {
         var habit = GetHabitById();
 
-        habit.Id = UserInputValidation.ValidateNumberInput(
-           "Please type the id of the habit you want to update."
-       );
+        if (habit == null)
+        {
+            AnsiConsole.MarkupLine(
+                "[Red]No habit found. Please select an existing habit from the list.[/]"
+            );
+            return;
+        }
 
-        habit.Name = "";
         var updateName = AnsiConsole.Confirm("Update name?");
         if (updateName)
         {
@@ -69,20 +75,37 @@ public class HabitService : IHabitService
             while (string.IsNullOrEmpty(habit.Name))
                 habit.Name = AnsiConsole.Ask<string>("Habit's name can't be empty. Try again:");
         }
+        else
+        {
+            habit.Name = habit.Name;
+        }
 
-        habit.UnitOfMeasurement = "";
         var updateUnit = AnsiConsole.Confirm("Update Unit of Measurement?");
         if (updateUnit)
         {
             habit.UnitOfMeasurement = AnsiConsole.Ask<string>("Habit's Unit of Measurement:");
             while (string.IsNullOrEmpty(habit.UnitOfMeasurement))
-                habit.UnitOfMeasurement = AnsiConsole.Ask<string>("Habit's unit can't be empty. Try again:");
+                habit.UnitOfMeasurement = AnsiConsole.Ask<string>(
+                    "Habit's unit can't be empty. Try again:"
+                );
         }
+
+        _habitRepository.UpdateHabit(habit);
     }
 
     public void DeleteHabit()
     {
-        var id = UserInputValidation.ValidateNumberInput("Select the ID of the Habit");
+        var habit = GetHabitById();
+
+        if (habit == null)
+        {
+            AnsiConsole.MarkupLine(
+                "[Red]No habit found. Please select an existing habit from the list.[/]"
+            );
+            return;
+        }
+
+        var id = habit.Id;
 
         _habitRepository.DeleteHabit(id);
     }
