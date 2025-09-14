@@ -10,9 +10,6 @@ public enum HabitMenuOptions
     [Display(Name = "View All Habits")]
     ViewAllHabits,
 
-    [Display(Name = "View Habit by ID")]
-    ViewHabitById,
-
     [Display(Name = "Delete Habit")]
     DeleteHabit,
 

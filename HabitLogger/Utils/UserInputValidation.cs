@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using HabitLogger.Models;
 using Spectre.Console;
+using Progress = HabitLogger.Models.Progress;
 
 namespace HabitLogger.Utils;
 
@@ -21,7 +22,9 @@ public static class UserInputValidation
             )
         )
         {
-            Console.WriteLine("Invalid date format. Please enter the date in mm-dd-yyyy format.");
+            AnsiConsole.MarkupLine(
+                "[Red]Invalid date format. Please enter the date in mm-dd-yyyy format.[/]"
+            );
             dateInput = Console.ReadLine();
         }
 
@@ -36,7 +39,7 @@ public static class UserInputValidation
         var output = 0;
         while (!int.TryParse(numberInput, out output) || output < 0)
         {
-            Console.WriteLine("Invalid number. Try again");
+            AnsiConsole.MarkupLine("[Red]Invalid number. Try again[/]");
             numberInput = Console.ReadLine();
         }
 
@@ -49,6 +52,19 @@ public static class UserInputValidation
         {
             AnsiConsole.MarkupLine(
                 "[Red]No habit found. Please select an existing habit from the list.[/]"
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    public static bool IsProgressValid(Progress progress)
+    {
+        if (progress == null)
+        {
+            AnsiConsole.MarkupLine(
+                "[Red]No progress found. Please select an existing habit progress from the list.[/]"
             );
             return false;
         }

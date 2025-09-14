@@ -35,6 +35,8 @@ public class HabitService : IHabitService
             );
 
         _habitRepository.InsertHabit(habit);
+
+        AnsiConsole.MarkupLine("[Green]Habit created successfully![/]");
     }
 
     public void GetHabits()
@@ -86,6 +88,8 @@ public class HabitService : IHabitService
         }
 
         _habitRepository.UpdateHabit(habit);
+
+        AnsiConsole.MarkupLine("[Green]Habit updated successfully![/]");
     }
 
     public void DeleteHabit()
@@ -98,5 +102,7 @@ public class HabitService : IHabitService
         var id = habit.Id;
 
         _habitRepository.DeleteHabit(id);
+
+        AnsiConsole.MarkupLine("[Green]Habit deleted successfully![/]");
     }
 }

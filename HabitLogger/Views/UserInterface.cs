@@ -31,7 +31,7 @@ public static class UserInterface
                 record.Id.ToString(),
                 record.Date.ToString("D"),
                 $"{record.Quantity} {record.Habit.UnitOfMeasurement}",
-                record.HabitId.ToString()
+                record.Habit.Name
             );
 
         AnsiConsole.Write(table);

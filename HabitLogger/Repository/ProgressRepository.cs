@@ -41,5 +41,7 @@ public class ProgressRepository : IProgressRepository
         var progress = GetProgressById(id);
 
         _habitLoggerDbContext.Remove(progress);
+
+        _habitLoggerDbContext.SaveChanges();
     }
 }

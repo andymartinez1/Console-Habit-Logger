@@ -10,9 +10,6 @@ public enum ProgressMenuOptions
     [Display(Name = "View All Progress")]
     ViewAllProgress,
 
-    [Display(Name = "View Progress by ID")]
-    ViewProgressById,
-
     [Display(Name = "Update Progress")]
     UpdateProgress,
 

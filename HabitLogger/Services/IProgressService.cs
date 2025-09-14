@@ -1,10 +1,14 @@
-﻿namespace HabitLogger.Services;
+﻿using HabitLogger.Models;
+
+namespace HabitLogger.Services;
 
 public interface IProgressService
 {
     public void InsertProgress();
 
     public void GetProgress();
+
+    public Progress GetProgressById();
 
     public void UpdateProgress();
 

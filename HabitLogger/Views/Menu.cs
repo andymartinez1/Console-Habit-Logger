@@ -11,7 +11,6 @@ public class Menu : IMenu
     [
         HabitMenuOptions.AddHabit,
         HabitMenuOptions.ViewAllHabits,
-        HabitMenuOptions.ViewHabitById,
         HabitMenuOptions.UpdateHabit,
         HabitMenuOptions.DeleteHabit,
         HabitMenuOptions.BackToMainMenu,
@@ -30,7 +29,6 @@ public class Menu : IMenu
     [
         ProgressMenuOptions.AddProgress,
         ProgressMenuOptions.ViewAllProgress,
-        ProgressMenuOptions.ViewProgressById,
         ProgressMenuOptions.UpdateProgress,
         ProgressMenuOptions.DeleteProgress,
         ProgressMenuOptions.BackToMainMenu,
@@ -66,10 +64,6 @@ public class Menu : IMenu
                 case HabitMenuOptions.ViewAllHabits:
                     AnsiConsole.Clear();
                     _habitService.GetHabits();
-                    break;
-                case HabitMenuOptions.ViewHabitById:
-                    AnsiConsole.Clear();
-                    _habitService.GetHabitById();
                     break;
                 case HabitMenuOptions.UpdateHabit:
                     AnsiConsole.Clear();
@@ -140,18 +134,19 @@ public class Menu : IMenu
             {
                 case ProgressMenuOptions.AddProgress:
                     AnsiConsole.Clear();
+                    _progressService.InsertProgress();
                     break;
                 case ProgressMenuOptions.ViewAllProgress:
                     AnsiConsole.Clear();
-                    break;
-                case ProgressMenuOptions.ViewProgressById:
-                    AnsiConsole.Clear();
+                    _progressService.GetProgress();
                     break;
                 case ProgressMenuOptions.UpdateProgress:
                     AnsiConsole.Clear();
+                    _progressService.UpdateProgress();
                     break;
                 case ProgressMenuOptions.DeleteProgress:
                     AnsiConsole.Clear();
+                    _progressService.DeleteProgress();
                     break;
                 case ProgressMenuOptions.BackToMainMenu:
                     AnsiConsole.Clear();
