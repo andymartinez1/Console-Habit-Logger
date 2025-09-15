@@ -27,11 +27,4 @@ public class HabitLoggerDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
     }
-
-    private void SeedData() { }
-
-    private bool IsTableEmpty(string tableName)
-    {
-        return false;
-    }
 }

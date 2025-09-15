@@ -61,7 +61,7 @@ public class ProgressService : IProgressService
     {
         GetProgress();
 
-        var id = UserInputValidation.ValidateNumberInput("Select the ID of the Habit");
+        var id = UserInputValidation.ValidateNumberInput("Select the ID of the habit progress");
 
         return _progressRepository.GetProgressById(id);
     }
