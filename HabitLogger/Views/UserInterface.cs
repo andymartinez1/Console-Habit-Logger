@@ -18,7 +18,7 @@ public static class UserInterface
         AnsiConsole.Write(table);
     }
 
-    public static void ViewAllProgress(List<Progress> progress)
+    public static void ViewAllProgress(List<Progress> progressList)
     {
         var table = new Table();
         table.AddColumn("Id");
@@ -26,12 +26,12 @@ public static class UserInterface
         table.AddColumn("Quantity");
         table.AddColumn("Habit Name");
 
-        foreach (var record in progress)
+        foreach (var progress in progressList)
             table.AddRow(
-                record.Id.ToString(),
-                record.Date.ToString("D"),
-                $"{record.Quantity} {record.Habit.UnitOfMeasurement}",
-                record.Habit.Name
+                progress.Id.ToString(),
+                progress.Date.ToString("D"),
+                $"{progress.Quantity} {progress.Habit.UnitOfMeasurement}",
+                progress.Habit.Name
             );
 
         AnsiConsole.Write(table);

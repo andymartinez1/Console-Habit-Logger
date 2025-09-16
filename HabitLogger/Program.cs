@@ -22,6 +22,9 @@ var servicesProvider = services.BuildServiceProvider();
 using (var scope = servicesProvider.CreateScope())
 {
     var data = scope.ServiceProvider.GetRequiredService<HabitLoggerDbContext>();
+    data.Database.EnsureDeleted();
+    data.Database.EnsureCreated();
+    SeedDatabase.SeedData(data);
 }
 
 // Get the main menu and run the app
