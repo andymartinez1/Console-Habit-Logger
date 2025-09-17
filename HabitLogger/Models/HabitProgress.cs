@@ -1,6 +1,6 @@
 ﻿namespace HabitLogger.Models;
 
-public class Progress
+public class HabitProgress
 {
     public int Id { get; set; }
 
@@ -10,5 +10,5 @@ public class Progress
 
     public int HabitId { get; set; }
 
-    public Habit Habit { get; set; }
+    public Habit? Habit { get; set; }
 }

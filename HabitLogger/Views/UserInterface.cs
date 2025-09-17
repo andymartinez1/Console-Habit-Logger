@@ -1,6 +1,5 @@
 ﻿using HabitLogger.Models;
 using Spectre.Console;
-using Progress = HabitLogger.Models.Progress;
 
 namespace HabitLogger.Views;
 
@@ -18,7 +17,7 @@ public static class UserInterface
         AnsiConsole.Write(table);
     }
 
-    public static void ViewAllProgress(List<Progress> progressList)
+    public static void ViewAllProgress(List<HabitProgress> progressList)
     {
         var table = new Table();
         table.AddColumn("Id");

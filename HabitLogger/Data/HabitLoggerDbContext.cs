@@ -7,7 +7,7 @@ namespace HabitLogger.Data;
 public class HabitLoggerDbContext : DbContext
 {
     public DbSet<Habit> Habits { get; set; }
-    public DbSet<Progress> ProgressList { get; set; }
+    public DbSet<HabitProgress> ProgressList { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

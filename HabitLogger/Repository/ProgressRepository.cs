@@ -12,26 +12,26 @@ public class ProgressRepository : IProgressRepository
         _habitLoggerDbContext = habitLoggerDbContext;
     }
 
-    public void InsertProgress(Progress progress)
+    public void InsertProgress(HabitProgress habitProgress)
     {
-        _habitLoggerDbContext.ProgressList.Add(progress);
+        _habitLoggerDbContext.ProgressList.Add(habitProgress);
 
         _habitLoggerDbContext.SaveChanges();
     }
 
-    public List<Progress> GetProgress()
+    public List<HabitProgress> GetProgressList()
     {
         return _habitLoggerDbContext.ProgressList.ToList();
     }
 
-    public Progress GetProgressById(int id)
+    public HabitProgress GetProgressById(int id)
     {
         return _habitLoggerDbContext.ProgressList.Find(id);
     }
 
-    public void UpdateProgress(Progress progress)
+    public void UpdateProgress(HabitProgress habitProgress)
     {
-        _habitLoggerDbContext.ProgressList.Update(progress);
+        _habitLoggerDbContext.ProgressList.Update(habitProgress);
 
         _habitLoggerDbContext.SaveChanges();
     }

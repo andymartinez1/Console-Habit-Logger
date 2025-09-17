@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using HabitLogger.Models;
 using Spectre.Console;
-using Progress = HabitLogger.Models.Progress;
 
 namespace HabitLogger.Utils;
 
@@ -59,9 +58,9 @@ public static class UserInputValidation
         return true;
     }
 
-    public static bool IsProgressValid(Progress progress)
+    public static bool IsProgressValid(HabitProgress habitProgress)
     {
-        if (progress == null)
+        if (habitProgress == null)
         {
             AnsiConsole.MarkupLine(
                 "[Red]No progress found. Please select an existing habit progress from the list.[/]"

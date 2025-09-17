@@ -12,7 +12,7 @@ public static class SeedDatabase
             new() { Name = "Reading", UnitOfMeasurement = "Pages" },
             new() { Name = "Walking", UnitOfMeasurement = "Miles" },
         };
-        var Progress = new List<Progress>
+        var ProgressList = new List<HabitProgress>
         {
             new()
             {
@@ -35,7 +35,7 @@ public static class SeedDatabase
         };
 
         context.Habits.AddRange(Habits);
-        context.ProgressList.AddRange(Progress);
+        context.ProgressList.AddRange(ProgressList);
         context.SaveChanges();
     }
 }

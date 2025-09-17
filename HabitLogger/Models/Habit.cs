@@ -8,5 +8,5 @@ public class Habit
 
     public string UnitOfMeasurement { get; set; } = string.Empty;
 
-    public List<Progress> ProgressList { get; set; } = new();
+    public List<HabitProgress> ProgressList { get; set; } = new();
 }

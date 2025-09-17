@@ -4,13 +4,13 @@ namespace HabitLogger.Repository;
 
 public interface IProgressRepository
 {
-    public void InsertProgress(Progress progress);
+    public void InsertProgress(HabitProgress habitProgress);
 
-    public List<Progress> GetProgress();
+    public List<HabitProgress> GetProgressList();
 
-    public Progress GetProgressById(int id);
+    public HabitProgress GetProgressById(int id);
 
-    public void UpdateProgress(Progress progress);
+    public void UpdateProgress(HabitProgress habitProgress);
 
     public void DeleteProgress(int id);
 }

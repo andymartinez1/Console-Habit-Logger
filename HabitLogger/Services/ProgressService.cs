@@ -1,9 +1,9 @@
 ﻿using HabitLogger.Data;
+using HabitLogger.Models;
 using HabitLogger.Repository;
 using HabitLogger.Utils;
 using HabitLogger.Views;
 using Spectre.Console;
-using Progress = HabitLogger.Models.Progress;
 
 namespace HabitLogger.Services;
 
@@ -26,38 +26,38 @@ public class ProgressService : IProgressService
 
     public void InsertProgress()
     {
-        Progress progress = new Progress();
+        HabitProgress habitProgress = new HabitProgress();
 
         _habitService.GetHabits();
 
-        progress.HabitId = UserInputValidation.ValidateNumberInput(
+        habitProgress.HabitId = UserInputValidation.ValidateNumberInput(
             "Enter the ID of the habit for which you want to add a record."
         );
 
         var date = UserInputValidation.ValidateDateInput("Enter the date. (Format: mm-dd-yyyy).");
 
-        progress.Date = DateTime.Parse(date);
+        habitProgress.Date = DateTime.Parse(date);
 
-        progress.Quantity = UserInputValidation.ValidateNumberInput("Enter quantity.");
+        habitProgress.Quantity = UserInputValidation.ValidateNumberInput("Enter quantity.");
 
-        _progressRepository.InsertProgress(progress);
+        _progressRepository.InsertProgress(habitProgress);
 
         AnsiConsole.MarkupLine("[Green]Progress created successfully![/]");
     }
 
     public void GetProgress()
     {
-        var progress = _progressRepository.GetProgress();
+        var progressList = _progressRepository.GetProgressList();
 
-        if (progress.Any())
-            UserInterface.ViewAllProgress(progress);
-        else
+        UserInterface.ViewAllProgress(progressList);
+
+        if (!progressList.Any())
             AnsiConsole.MarkupLine(
                 "[Red]No progress to display. Please add new habit progress.[/]"
             );
     }
 
-    public Progress GetProgressById()
+    public HabitProgress GetProgressById()
     {
         GetProgress();
 

@@ -8,7 +8,7 @@ public interface IProgressService
 
     public void GetProgress();
 
-    public Progress GetProgressById();
+    public HabitProgress GetProgressById();
 
     public void UpdateProgress();
 

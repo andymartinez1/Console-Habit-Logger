@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 var services = new ServiceCollection();
 
 // Registering the dependencies
-services.AddScoped<HabitLoggerDbContext>();
+services.AddDbContext<HabitLoggerDbContext>();
 services.AddScoped<IHabitRepository, HabitRepository>();
 services.AddScoped<IHabitService, HabitService>();
 services.AddScoped<IProgressRepository, ProgressRepository>();
